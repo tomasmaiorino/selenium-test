@@ -1,7 +1,7 @@
 general:
-  driversToTest:
-    service:
-      login: chrome,
+  driversToTest: chrome,
+  test:
+    waitTimeout: 1
   driver:
     name:
       firefox: firefox
@@ -13,7 +13,7 @@ general:
           chrome: webdriver.chrome.driver
         value:
           firefox: /home/tomas/Downloads/geckodriver
-          chrome: /Users/tomasmaiorino/Downloads/chromedriver
+          chrome: /home/tomas/Downloads/chromedriver
 login:
   test:
     name: login

@@ -27,18 +27,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.tsm.SeleniumTestApplication;
 import com.tsm.model.TestDone;
 import com.tsm.model.TestResult;
-import com.tsm.service.LoginBaseTestService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SeleniumTestApplication.class)
 @WebAppConfiguration
-public class TestLoginServiceControllerTest {
+public class TestServiceControllerTest {
 
-	@InjectMocks
-	private TestLoginServiceController sc;
-
-	@Mock
-	private LoginBaseTestService service;
 
 	private MockMvc mockMvc;
 
@@ -68,9 +62,9 @@ public class TestLoginServiceControllerTest {
 		TestResult test = new TestResult();
 		TestDone testDone = createTestDone("", 200, "firefox", "http://localhost", "login");
 		test.setTestsDone(Collections.singletonList(testDone));
-		sc.setLoginTestService(service);
-		when(service.runTest()).thenReturn(test);
-		ResponseEntity<TestResult> testResult = sc.testLogin();
+		//sc.setLoginTestService(service);
+		//when(service.runTest()).thenReturn(test);
+		ResponseEntity<TestResult> testResult = null;
 		Assert.assertEquals(HttpStatus.OK_200, testResult.getStatusCode().value());
 		Assert.assertEquals(test.getTestsDone(), testResult.getBody().getTestsDone());
 		Assert.assertEquals(test.getTestsDone().get(0).getStatus(), testResult.getBody().getTestsDone().get(0).getStatus());
