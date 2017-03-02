@@ -15,4 +15,6 @@ public class SeleniumAttributeTest {
     private String cssClass;
 
     private String value;
+	
+	private ActionAttributeTest actionAttributeTest;
 }

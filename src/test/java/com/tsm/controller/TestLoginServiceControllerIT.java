@@ -1,4 +1,4 @@
-package i.com.tsm.controller;
+package com.tsm.controller;
 
 import com.tsm.SeleniumTestApplication;
 import org.junit.Before;
@@ -19,7 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SeleniumTestApplication.class)
 @WebAppConfiguration
-public class TestIntegrationLoginServiceControllerTest {
+public class TestLoginServiceControllerIT {
 
 
 	private MockMvc mockMvc;

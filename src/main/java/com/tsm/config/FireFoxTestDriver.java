@@ -33,9 +33,6 @@ public class FireFoxTestDriver extends BaseTestDriver {
     private WebDriver webDriver;
 
     public WebDriver getWebDriver() {
-        if (webDriver == null) {
-            webDriver = new FirefoxDriver();
-        }
-        return webDriver;
+    	return new FirefoxDriver();
     }
 }

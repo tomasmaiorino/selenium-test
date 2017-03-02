@@ -18,25 +18,26 @@ import lombok.Setter;
 @ConfigurationProperties
 public class ChromeTestDriver extends BaseTestDriver {
 
-    @Getter @Setter
-    @Value("${general.driver.name.chrome}")
-    private String driverName;
+	@Getter
+	@Setter
+	@Value("${general.driver.name.chrome}")
+	private String driverName;
 
-    @Getter @Setter
-    @Value("${general.driver.system.property.name.chrome}")
-    private String systemPropertyName;
+	@Getter
+	@Setter
+	@Value("${general.driver.system.property.name.chrome}")
+	private String systemPropertyName;
 
-    @Getter @Setter
-    @Value("${general.driver.system.property.value.chrome}")
-    private String systemPropertyValue;
+	@Getter
+	@Setter
+	@Value("${general.driver.system.property.value.chrome}")
+	private String systemPropertyValue;
 
-    @Setter
-    private WebDriver webDriver;
+	@Setter
+	private WebDriver webDriver;
 
     public WebDriver getWebDriver() {
-        if (webDriver == null) {
-            webDriver = new ChromeDriver();
-        }
-        return webDriver;
+        return new ChromeDriver();
     }
+
 }

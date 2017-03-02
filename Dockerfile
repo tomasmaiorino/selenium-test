@@ -8,31 +8,25 @@
 FROM maven:3.3.9-jdk-8
 MAINTAINER Maiorino Tomas <tomasmaiorino@gmail.com>
 
-# Set environment variables
-ENV GECKO_DRIVER_URL https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux64.tar.gz
-ENV SELENIUM_TEMP_DIR /sel/tmp/
-ENV SELENIUM_DIR /sel/
-ENV GECKO_GZ_FILE geckodriver-v0.14.0-linux64.tar.gz
-ENV GECKO_DRIVER_NAME geckodriver
-ENV APPLICATION_DIR app
+#APPLICATION CONFIGURATION
+ENV APPLICATION_DIR /usr/src/app/
 ENV APPLICATION_REPO https://github.com/tomasmaiorino/selenium-test.git
 ENV APPLICATION_NAME selenium-test
 
-# Install packages required to install Selenium
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
+#CHROME CONFIGURATION
+ENV CHROMEDRIVER_VERSION 2.27
 
-RUN mkdir -p $SELENIUM_TEMP_DIR
-RUN cd $SELENIUM_TEMP_DIR
-RUN wget $GECKO_DRIVER_URL
-RUN tar -xvzf $GECKO_GZ_FILE
-RUN cp -v $GECKO_DRIVER_NAME $SELENIUM_DIR
+RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip && \
+    mkdir -p /opt/chromedriver-${CHROMEDRIVER_VERSION} && \
+    unzip /tmp/chromedriver_linux64.zip -d /opt/chromedriver-${CHROMEDRIVER_VERSION} && \
+    chmod +x /opt/chromedriver-${CHROMEDRIVER_VERSION}/chromedriver && \
+    rm /tmp/chromedriver_linux64.zip && \
+    ln -fs /opt/chromedriver-${CHROMEDRIVER_VERSION}/chromedriver /usr/local/bin/chromedriver
 
-# Project structure
-RUN cd $SELENIUM_DIR && mkdir $APPLICATION_DIR && cd $APPLICATION_DIR && pwd
+# APP CONFIGURATION
+RUN mkdir -p $APPLICATION_DIR 
+RUN cd $APPLICATION_DIR && pwd && ls -altr
 RUN git clone $APPLICATION_REPO
-RUN cd $APPLICATION_NAME && pwd && ls
-#RUN echo $PATH
-RUN mvn -v
-RUN which mvn
-RUN mvn clean install --file pom.xml
+RUN cp -rv $APPLICATION_NAME/* $APPLICATION_DIR/
+RUN cd $APPLICATION_DIR && ls -altr
+RUN mvn clean install --file $APPLICATION_DIR/pom.xml

@@ -1,5 +1,5 @@
 general:
-  driversToTest: chrome,
+  driversToTest: firefoxe
   test:
     waitTimeout: 1
   driver:

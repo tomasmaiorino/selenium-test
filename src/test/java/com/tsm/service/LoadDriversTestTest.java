@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,5 +82,10 @@ public class LoadDriversTestTest {
 		Assert.assertNotNull(db);
 		Assert.assertEquals(drivers.size() - 1, db.size());
 		Assert.assertEquals(chromeTestDriver.getDriverName(), db.get(1).getDriverName());
+	}
+
+	@Test
+	public void shouldReturnNullForInvalidDriver () {
+		Assert.assertNull(loadDriversTest.getTestDriverByName("notValidDriver"));
 	}
 }

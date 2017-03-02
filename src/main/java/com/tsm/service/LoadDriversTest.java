@@ -31,12 +31,13 @@ public class LoadDriversTest {
 	@Getter @Setter
 	public ChromeTestDriver chromeTestDriver; 
 	
+	
 	public BaseTestDriver getTestDriverByName(final String name) {
 		 Assert.notNull(name, "Name must not be null!");
 		 if (drives.isEmpty()) {
-			drives.add(fireFoxTestDriver);
-			drives.add(chromeTestDriver);
-		 }
+				drives.add(fireFoxTestDriver);
+				drives.add(chromeTestDriver);
+			 }
 		 try {
 			 return drives.stream().filter(d -> d.getDriverName().equals(name)).findFirst().get();
 		 } catch (NoSuchElementException e) {
@@ -55,4 +56,5 @@ public class LoadDriversTest {
 		}
 		return list;
 	}
+	
 }
