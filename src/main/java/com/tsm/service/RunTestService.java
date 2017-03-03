@@ -36,12 +36,16 @@ public class RunTestService {
 	private LoadDriversTest loadDriversTest;
 
 	public List<BaseTestDriver> initialLoad(ScenarioTest scenarioTest) {
-		log.debug(String.format("%s initial load ->", scenarioTest.getNameTest()));
+		log.info(String.format("%s initial load ->", scenarioTest.getNameTest()));
 		List<String> driversNames = myConfig.getDriversToTest();
 		//loadDriversTest.reloadDrives();
 		List<BaseTestDriver> drivers = loadDriversTest.getTestDriversByName(driversNames);
+		drivers.forEach(dr -> log.info(
+				String.format("driver(%s) system property name (%s) system property value(%s)", dr.getDriverName(),
+						dr.getSystemPropertyName(),
+						dr.getSystemPropertyValue())));
 		drivers.forEach(dr -> System.setProperty(dr.getSystemPropertyName(), dr.getSystemPropertyValue()));
-		log.debug(String.format("%s initial load <-", scenarioTest.getNameTest()));
+		log.info(String.format("%s initial load <-", scenarioTest.getNameTest()));
 		return drivers;
 	}
 

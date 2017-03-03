@@ -24,9 +24,16 @@ RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip http://chromedriver.stora
     ln -fs /opt/chromedriver-${CHROMEDRIVER_VERSION}/chromedriver /usr/local/bin/chromedriver
 
 # APP CONFIGURATION
+EXPOSE 8080
 RUN mkdir -p $APPLICATION_DIR 
 RUN cd $APPLICATION_DIR && pwd && ls -altr
 RUN git clone $APPLICATION_REPO
 RUN cp -rv $APPLICATION_NAME/* $APPLICATION_DIR/
 RUN cd $APPLICATION_DIR && ls -altr
 RUN mvn clean install --file $APPLICATION_DIR/pom.xml
+CMD ["mvn", "package"]
+#CMD \
+#     java -jar \
+#     $APPLICATION_DIRtarget/selenium-test-0.0.1-SNAPSHOT.jar
+CMD ["java", "-jar","/usr/src/app/target/selenium-test-0.0.1-SNAPSHOT.jar"]
+
