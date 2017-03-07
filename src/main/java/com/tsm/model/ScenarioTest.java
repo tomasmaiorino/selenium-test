@@ -17,4 +17,6 @@ public class ScenarioTest {
 	
 	private String urlTest;
 	
+	private boolean startBrowser;
+
 }

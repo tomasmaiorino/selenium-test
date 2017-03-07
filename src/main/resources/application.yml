@@ -13,7 +13,7 @@ general:
           chrome: webdriver.chrome.driver
         value:
           firefox: /home/tomas/Downloads/geckodriver
-          chrome: /usr/local/bin/chromedriver
+          chrome: /usr/src/drivers/chrome/chromedriver
 login:
   test:
     name: login

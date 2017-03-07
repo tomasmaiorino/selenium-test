@@ -1,11 +1,14 @@
 package com.tsm.config;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,8 +39,14 @@ public class ChromeTestDriver extends BaseTestDriver {
 	@Setter
 	private WebDriver webDriver;
 
-    public WebDriver getWebDriver() {
-        return new ChromeDriver();
-    }
+	@Setter @Getter
+	private boolean startBrowser;
 
+	public WebDriver getWebDriver() {
+		if (!isStartBrowser()) {
+			return new HtmlUnitDriver(BrowserVersion.CHROME, true);
+		} else {
+			return new FirefoxDriver();
+		}
+	}
 }

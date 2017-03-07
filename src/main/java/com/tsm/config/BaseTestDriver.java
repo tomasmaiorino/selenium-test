@@ -14,5 +14,9 @@ public abstract class BaseTestDriver {
     public abstract String getSystemPropertyValue();
 
     public abstract WebDriver getWebDriver();
+
+    public abstract boolean isStartBrowser();
+
+    public abstract void setStartBrowser(boolean startBrowser);
     
 }

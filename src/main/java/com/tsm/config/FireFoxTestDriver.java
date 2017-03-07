@@ -4,10 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 /**
  * Created by tomas on 2/19/17.
@@ -32,7 +35,14 @@ public class FireFoxTestDriver extends BaseTestDriver {
     @Setter
     private WebDriver webDriver;
 
+    @Setter @Getter
+    private boolean startBrowser;
+
     public WebDriver getWebDriver() {
-    	return new FirefoxDriver();
+        if (!isStartBrowser()) {
+    		return new HtmlUnitDriver(BrowserVersion.FIREFOX_45, true);
+    	} else {
+            return new FirefoxDriver();
+    	}
     }
 }
