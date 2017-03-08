@@ -41,7 +41,7 @@ public class RunTestService {
 	@Autowired
 	private LoadDriversTest loadDriversTest;
 
-	public List<BaseTestDriver> initialLoad(ScenarioTest scenarioTest) {
+	public List<BaseTestDriver> loadDrivers(ScenarioTest scenarioTest) {
 		log.info(String.format("%s initial load - start browser ?(%s) ->",
 				scenarioTest.getNameTest(), scenarioTest.isStartBrowser()));
 		List<String> driversNames = myConfig.getDriversToTest();
@@ -62,7 +62,7 @@ public class RunTestService {
 		log.info(String.format("runTest (%s)->", scenarioTest.getNameTest()));
 		TestResult result = new TestResult();
 		boolean success = true;
-			List<BaseTestDriver> drivers = initialLoad(scenarioTest);
+			List<BaseTestDriver> drivers = loadDrivers(scenarioTest);
 			for (BaseTestDriver baseDriver : drivers) {
 				WebDriver driver = baseDriver.getWebDriver();
 				try {
@@ -85,7 +85,7 @@ public class RunTestService {
 						testDone.setStatus(HttpStatus.SC_OK);
 					} else {
 						success = false;
-						testDone.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+						testDone.setStatus(HttpStatus.SC_BAD_REQUEST);
 					}
 					result.getTestsDone().add(testDone);
 				} catch (Exception e) {
@@ -99,7 +99,7 @@ public class RunTestService {
 				}
 			}
 
-		result.setStatus(success ? HttpStatus.SC_OK : HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		result.setStatus(success ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST);
 		log.info("runTest <-");
 		return result;
 	}

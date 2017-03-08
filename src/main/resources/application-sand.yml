@@ -1,7 +1,7 @@
 general:
-  driversToTest:
-    service:
-      login: chrome,
+  driversToTest: chrome,
+  test:
+    waitTimeout: 1
   driver:
     name:
       firefox: firefox
@@ -13,32 +13,4 @@ general:
           chrome: webdriver.chrome.driver
         value:
           firefox: /home/tomas/Downloads/geckodriver
-          chrome: /Users/tomasmaiorino/Downloads/chromedriver
-login:
-  test:
-    name: login
-    url: https://site.com/login
-    waitTimeout: 10
-    form:
-      element:
-        id:
-        name: username
-    username:
-      valid: user.name@site.com
-      invalid:
-      element:
-        class:
-        id:
-        name: username
-    password:
-      valid: $$$$$
-      invalid:
-      element:
-        class:
-        id:
-        name: password
-    valid:
-      expectedPresenceElement: userItem
-    invalid:
-      expectedPresenceElement: formErrorLabel
-      expectedPresenceElementText: Oops, unknown username or password.
+          chrome: /usr/src/drivers/chrome/chromedriver

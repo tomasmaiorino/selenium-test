@@ -35,7 +35,7 @@ public class TestServiceController {
     	log.info("testing ->");
     	TestResult testResult = runTestService.runTest(scenarioTest);
     	log.info("testing <-");
-        return new ResponseEntity<>(testResult, HttpStatus.OK);
+        return new ResponseEntity<>(testResult, HttpStatus.valueOf(testResult.getStatus()));
     }
     
 }

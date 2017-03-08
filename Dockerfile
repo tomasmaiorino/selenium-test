@@ -16,14 +16,10 @@ ENV APPLICATION_NAME selenium-test
 # APP CONFIGURATION
 EXPOSE 8080
 RUN mkdir -p $APPLICATION_DIR 
-RUN cd $APPLICATION_DIR && pwd && ls -altr
+RUN cd $APPLICATION_DIR
 RUN git clone $APPLICATION_REPO
 RUN cp -rv $APPLICATION_NAME/* $APPLICATION_DIR/
-RUN cd $APPLICATION_DIR && ls -altr
 RUN mvn clean install --file $APPLICATION_DIR/pom.xml
 CMD ["mvn", "package"]
-#CMD \
-#     java -jar \
-#     $APPLICATION_DIRtarget/selenium-test-0.0.1-SNAPSHOT.jar
 CMD ["java", "-jar","/usr/src/app/target/selenium-test-0.0.1-SNAPSHOT.jar"]
 

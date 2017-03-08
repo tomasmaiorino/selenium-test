@@ -20,10 +20,6 @@ import lombok.Setter;
 public class MyConfig {
 
     @Getter @Setter
-    //@Value("#{'${general.driversToTest.service.login}'.split(',')}")
-    private List<String> loginDriversToTest = new ArrayList<>();
-
-    @Getter @Setter
     @Value("#{'${general.driversToTest}'.split(',')}")
     private List<String> driversToTest = new ArrayList<>();
 
