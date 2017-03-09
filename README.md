@@ -1,6 +1,8 @@
 It's a RESTful service responsible for run a test using selenium webdriver.
 
-For now this application can be executed using a docker container which is used for headless browser tests, or for no headless browser testes you can use your preferred OS with the browsers supported for this service.
+For now this application can be executed in two ways:
+1 - Using a docker container which is used for headless browser tests.
+2 - Using a no headless browser which will required you to both install and download the browser's driver.
 
 This application is running under Spring Boot.
 
@@ -19,18 +21,16 @@ This application is running under Spring Boot.
 
 ## Considerations
 
-The integration of the pages with the data occurs asynchronously, always making access to REST services available.
 
 ## Usage In Local Machine
 
 ###### Pré-requisitos
 ```
-JDK - Java version 1.7.
+JDK - Java version 1.8.
 
 Any Java IDE with support Maven.
 
 Maven for build and dependecies.
-
 
 ###### After download the fonts, to install the application and test it execute the maven command:
 $ mvn clean install
@@ -41,31 +41,47 @@ $ mvn clean test
 ###### To run the application the maven command:
 $ mvn spring-boot:run
 
-###### To test the find products by id, open the browser of your preference and type it:
-http://localhost:8080/product/1
+###### To test a login for a specific site test:
+http://localhost:8080/testing
 
-###### To test the find products by catalog service, open the browser of your preference and type it:
-http://localhost:8080/product/cat/Store
-
-###### To test find list service by id service, open the browser of your preference and type it:
-http://localhost:8080/order/1
-
-###### To test the find orders by sku id service, open the browser of your preference and type it:
-http://localhost:8080/order/sku/1
-
-###### To test the find all orders service, open the browser of your preference and type it:
-http://localhost:8080/order/all
-
-###### To test the create order service, tpye it:
-curl -i -H "Content-Type:application/json" -H "Accept:application/json" -X POST http://localhost:8080/order -d "{\"commerceItems\": [{\"sku\": {\"id\": 3},\"quantity\": 12,\"unitValue\": 12}],\"status\": \"SUBMITTED\",\"paymentStatus\": \"CREATED\",\"totalAmount\": 26}
-
-##### To update the order, type it:
-curl -i -H "Content-Type:application/json" -H "Accept:application/json" -X PUT -d "{\"id\":4, \"commerceItems\": [{\"sku\": {\"id\": 1},\"quantity\": 12,\"unitValue\": 12}],\"status\": \"APPROVED\",\"paymentStatus\": \"CREATED\",\"totalAmount\": 21}" http://localhost:8080/order
-
-
-
-login:
 curl -i -H "Content-Type:application/json" -H "Accept:application/json" -X POST http://localhost:8080/testing -d "{\"nameTest\": \"login\",\"urlTest\" :\"https://site.com/login\",\"formTest\":{  \"id\":\"\",\"name\": \"username\",\"cssClass\": \"\",\"value\": \"\"},\"attributesTest\":[  {    \"id\":\"\",\"name\": \"username\",\"cssClass\": \"\",\"value\": \"tomas.maiorino@site.com\"},{\"id\":\"\",\"name\": \"password\",\"cssClass\": \"\",\"value\": \"123456\"  }],\"validationAttributesTest\":[  {    \"id\":\"\",\"name\": \"\",\"cssClass\": \"userItem\",\"value\": \"\",\"validationType\": \"hasElement\",\"checkList\": \"\",\"validationContent\": \"\"}]}"
+
+**About Json body**
+{
+	"nameTest": "login",
+	"urlTest": "https://site.com/login",
+	"formTest": {
+		"id": "",
+		"name": "username", (indicates that the search by the html form element to be submitted will be made by name)
+		"cssClass": "",
+		"value": ""
+	},
+	"attributesTest": [{
+		"id": "",
+		"name": "username", (indicates that the search by the html element to be altered will be made by name)
+		"cssClass": "",
+		"value": "tomas.maiorino@site.com"
+	}, {
+		"id": "",
+		"name": "password", (indicates that the search by the html element to be altered will be made by name)
+		"cssClass": "",
+		"value": "123456"
+	}],
+	"validationAttributesTest": [{
+		"id": "",
+		"name": "",
+		"cssClass": "userItem", (indicates that the search by the html element to be validated will be made by css class)
+		"value": "",
+		"validationType": "hasElement",
+		"checkList": "",
+		"validationContent": ""
+	}]
+}
+
+
+
+
+
 
 invalid login:
 curl -i -H "Content-Type:application/json" -H "Accept:application/json" -X POST http://localhost:8080/testing -d "{\"nameTest\": \"invalid login\",\"urlTest\" :\"https://site.com/login\",\"formTest\":{  \"id\":\"\",\"name\": \"username\",\"cssClass\": \"\",\"value\": \"\"},\"attributesTest\":[  {    \"id\":\"\",\"name\": \"username\",\"cssClass\": \"\",\"value\": \"tomas.maiorino@site.com\"},{\"id\":\"\",\"name\": \"password\",\"cssClass\": \"\",\"value\": \"1234567\"  }],\"validationAttributesTest\":[  {    \"id\":\"\",\"name\": \"\",\"cssClass\": \"formErrorLabel\",\"value\": \"Oops, unknown username or password.\",\"validationType\": \"text\",\"checkList\": \"\",\"validationContent\": \"\"}]}"

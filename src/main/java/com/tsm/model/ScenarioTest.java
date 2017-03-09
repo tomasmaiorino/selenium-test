@@ -19,4 +19,5 @@ public class ScenarioTest {
 	
 	private boolean startBrowser;
 
+	private boolean disableJavascript;
 }

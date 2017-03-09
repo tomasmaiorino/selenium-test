@@ -1,6 +1,7 @@
 package com.tsm.config;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,11 +43,11 @@ public class ChromeTestDriver extends BaseTestDriver {
 	@Setter @Getter
 	private boolean startBrowser;
 
-	public WebDriver getWebDriver() {
+	public WebDriver getWebDriver(boolean enableJavascript) {
 		if (!isStartBrowser()) {
-			return new HtmlUnitDriver(BrowserVersion.CHROME, true);
+			return new HtmlUnitDriver(BrowserVersion.CHROME, !enableJavascript);
 		} else {
-			return new FirefoxDriver();
+			return new ChromeDriver();
 		}
 	}
 

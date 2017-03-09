@@ -104,8 +104,10 @@ public class RunTestServiceTest {
         ScenarioTest scenarioTest = new ScenarioTest();
         scenarioTest.setNameTest("Login");
         scenarioTest.setStartBrowser(true);
-        
+
         List<BaseTestDriver> baseDrives = runTestService.loadDrivers(scenarioTest);
+        Assert.assertNotNull(System.getProperty(baseDrives.get(0).getSystemPropertyName()));
+        Assert.assertNotNull(System.getProperty(baseDrives.get(1).getSystemPropertyName()));
         Assert.assertNotNull(baseDrives);
         Assert.assertEquals(2, baseDrives.size());
         Assert.assertTrue(baseDrives.get(0).isStartBrowser());

@@ -64,7 +64,7 @@ public class RunTestService {
 		boolean success = true;
 			List<BaseTestDriver> drivers = loadDrivers(scenarioTest);
 			for (BaseTestDriver baseDriver : drivers) {
-				WebDriver driver = baseDriver.getWebDriver();
+				WebDriver driver = baseDriver.getWebDriver(scenarioTest.isDisableJavascript());
 				try {
 					log.info("Testing driver: " + baseDriver.getDriverName() + " ->");
 					log.debug("Doing get call: " + scenarioTest.getUrlTest());

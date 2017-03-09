@@ -13,7 +13,7 @@ public abstract class BaseTestDriver {
 
     public abstract String getSystemPropertyValue();
 
-    public abstract WebDriver getWebDriver();
+    public abstract WebDriver getWebDriver(boolean enableJavascript);
 
     public abstract boolean isStartBrowser();
 

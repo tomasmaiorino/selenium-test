@@ -38,9 +38,9 @@ public class FireFoxTestDriver extends BaseTestDriver {
     @Setter @Getter
     private boolean startBrowser;
 
-    public WebDriver getWebDriver() {
+    public WebDriver getWebDriver(boolean enableJavascript) {
         if (!isStartBrowser()) {
-    		return new HtmlUnitDriver(BrowserVersion.FIREFOX_45, true);
+    		return new HtmlUnitDriver(BrowserVersion.FIREFOX_45, !enableJavascript);
     	} else {
             return new FirefoxDriver();
     	}

@@ -13,4 +13,4 @@ general:
           chrome: webdriver.chrome.driver
         value:
           firefox: /home/tomas/Downloads/geckodriver
-          chrome: /usr/src/drivers/chrome/chromedriver
+          chrome: /home/tomas/Downloads/chromedriver
