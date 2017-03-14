@@ -17,7 +17,7 @@ import lombok.Setter;
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties
-public class MyConfig {
+public class GeneralConfig {
 
     @Getter @Setter
     @Value("#{'${general.driversToTest}'.split(',')}")

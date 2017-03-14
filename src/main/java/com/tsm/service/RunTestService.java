@@ -1,196 +1,151 @@
 package com.tsm.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.tsm.model.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.tsm.config.BaseTestDriver;
-import com.tsm.config.MyConfig;
-import com.tsm.model.ActionAttributeTest;
-import com.tsm.model.AttributeTest;
-import com.tsm.model.ScenarioTest;
-import com.tsm.model.SeleniumAttributeTest;
-import com.tsm.model.TestDone;
-import com.tsm.model.TestResult;
+import com.tsm.config.GeneralConfig;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 /**
- * Created by tomas on 2/23/17.
+ * Created by tomas on 3/9/17.
  */
-@Service
 @Slf4j
 public class RunTestService {
 
-	@Getter
-	@Setter
-	@Autowired
-	private MyConfig myConfig;
+    @Autowired
+    @Getter
+    @Setter
+    private ManageDrivers manageDrivers;
 
-	@Getter
-	@Setter
-	@Autowired
-	private LoadDriversTest loadDriversTest;
+    @Autowired
+    @Getter
+    @Setter
+    private GeneralConfig generalConfig;
 
-	public List<BaseTestDriver> loadDrivers(ScenarioTest scenarioTest) {
-		log.info(String.format("%s initial load - start browser ?(%s) ->",
-				scenarioTest.getNameTest(), scenarioTest.isStartBrowser()));
-		List<String> driversNames = myConfig.getDriversToTest();
-		List<BaseTestDriver> drivers = loadDriversTest.getTestDriversByName(driversNames);
-		for(BaseTestDriver dr : drivers) {
-			if (scenarioTest.isStartBrowser()) {
-				log.info(String.format("driver(%s) system property name (%s) system property value(%s)",
-						dr.getDriverName(), dr.getSystemPropertyName(), dr.getSystemPropertyValue()));
-				System.setProperty(dr.getSystemPropertyName(), dr.getSystemPropertyValue());
-			}
-			dr.setStartBrowser(scenarioTest.isStartBrowser());
-		}
-		log.info(String.format("%s initial load <-", scenarioTest.getNameTest()));
-		return drivers;
-	}
+    public TestResult runTest(ScenarioTest scenarioTest) {
+        Assert.notNull(scenarioTest, "ScenarioTest must not be null!");
+        TestResult result = new TestResult();
+        List<TestDone> testsDone = new ArrayList<>();
 
-	public TestResult runTest(ScenarioTest scenarioTest) {
-		log.info(String.format("runTest (%s)->", scenarioTest.getNameTest()));
-		TestResult result = new TestResult();
-		boolean success = true;
-			List<BaseTestDriver> drivers = loadDrivers(scenarioTest);
-			for (BaseTestDriver baseDriver : drivers) {
-				WebDriver driver = baseDriver.getWebDriver(scenarioTest.isDisableJavascript());
-				try {
-					log.info("Testing driver: " + baseDriver.getDriverName() + " ->");
-					log.debug("Doing get call: " + scenarioTest.getUrlTest());
-					log.debug("getting url");
-					driver.get(scenarioTest.getUrlTest());
-					log.debug("configuring url");
-					configureRequest(scenarioTest.getAttributesTest(), driver);
+        List<BaseTestDriver> baseDrivers = manageDrivers.loadDrivers(generalConfig.getDriversToTest(), scenarioTest);
 
-					log.info("Submitting form.");
-					submitForm(driver, scenarioTest.getFormTest());
+        for (BaseTestDriver driver : baseDrivers) {
+            testsDone.add(doesTest(scenarioTest, driver));
+        }
+        return result;
+    }
 
-					TestDone testDone = new TestDone();
-					testDone.setTestedUrl(scenarioTest.getUrlTest());
-					testDone.setTestedService(scenarioTest.getNameTest());
-					testDone.setTestedDriver(baseDriver.getDriverName());
+    public void executeAction(WebDriver driver, ActionAttributeTest attributeTest) {
+        Assert.notNull(attributeTest, "ActionAttributeTest must not be null");
+        Assert.notNull(driver, "WebDriver must not be null");
+        WebElement ele = getWebElement(driver, attributeTest);
+        if (attributeTest.getAction().equals("click")) {
+            ele.click();
+        }
+    }
+    
+    public TestDone doesTest(ScenarioTest scenarioTest, BaseTestDriver baseDriver) {
+        Assert.notNull(baseDriver, "BaseTestDriver must not be null");
+        Assert.notNull(scenarioTest, "ScenarioTest must not be null");
+        WebDriver driver = baseDriver.getWebDriver(scenarioTest.isDisableJavascript());
+        driver.get(scenarioTest.getUrlTest());
+        configureRequest(scenarioTest.getAttributesTest(), driver);
 
-					if (wasAllTestsSuccessful(driver, scenarioTest.getValidationAttributesTest())) {
-						testDone.setStatus(HttpStatus.SC_OK);
-					} else {
-						success = false;
-						testDone.setStatus(HttpStatus.SC_BAD_REQUEST);
-					}
-					result.getTestsDone().add(testDone);
-				} catch (Exception e) {
-					log.error("Error trying test driver: " + baseDriver.getDriverName(), e);
-					success = false;
-				} finally {
-					if (driver != null) {
-						driver.close();
-					}
-					log.info("Testing driver: " + baseDriver.getDriverName() + " <-");
-				}
-			}
+        submitForm(driver, scenarioTest.getFormTest());
+        return null;
+    }
 
-		result.setStatus(success ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST);
-		log.info("runTest <-");
-		return result;
-	}
+    public void submitForm(WebDriver driver, SeleniumAttributeTest formTest) {
+        WebElement ele = getWebElement(driver, formTest);
+        ele.submit();
+    }
 
-	private void submitForm(WebDriver driver, SeleniumAttributeTest formTest) {
-		WebElement ele = getWebElement(driver, formTest);
-		ele.submit();
-	}
+    public WebElement getWebElement(WebDriver driver, SeleniumAttributeTest attr) {
+        log.info("getWebElement ->");
+        
+        Assert.notNull(attr, "SeleniumAttributeTest must not be null");
+        Assert.notNull(driver, "WebDriver must not be null");
+        
+        WebElement ele = null;
+        if (StringUtils.isNoneBlank(attr.getId())) {
+            ele = driver.findElement(By.id(attr.getId()));
+        } else if (StringUtils.isNoneBlank(attr.getName())) {
+            ele = driver.findElement(By.name(attr.getName()));
+        } else if (StringUtils.isNoneBlank(attr.getCssClass())) {
+            ele = driver.findElement(By.className(attr.getCssClass()));
+        }
+        log.info("getWebElement <-");
+        return ele;
+    }
+    
+    public void configureRequest(List<SeleniumAttributeTest> attributeTests, WebDriver driver) {
+        Assert.notEmpty(attributeTests, "attributeTests must not be empty!");
+        for (SeleniumAttributeTest attr : attributeTests) {
+            boolean hasAction = attr.getActionAttributeTest() != null;
 
-	private boolean wasAllTestsSuccessful(WebDriver driver, List<AttributeTest> attributeTest) {
-		boolean success = true;
-		for (SeleniumAttributeTest attr : attributeTest) {
-			success = wasTestSuccessful(driver, (AttributeTest) attr);
-			if (!success) {
-				return success;
-			}
-		}
-		return success;
-	}
+            if (hasAction && attr.getActionAttributeTest().isRunBeforeSetValue()) {
+                log.info("There an action to be execute before (configureRequest): "
+                        + attr.getActionAttributeTest().getAction());
+                executeAction(driver, attr.getActionAttributeTest());
+            }
 
-	private void executeAction(WebDriver driver, ActionAttributeTest attributeTest) {
-		WebElement ele = getWebElement(driver, attributeTest);
-		if (attributeTest.getAction().equals("click")) {
-			ele.click();
-		}
-	}
+            WebElement ele = getWebElement(driver, attr);
+            ele.sendKeys(attr.getValue());
 
-	private boolean wasTestSuccessful(WebDriver driver, AttributeTest attributeTest) {
-		WebDriverWait wait = new WebDriverWait(driver, myConfig.getTestWaitTimeout());
-		By byElement = getExpectedElement(attributeTest);
+            if (hasAction && !attr.getActionAttributeTest().isRunBeforeSetValue()) {
+                log.info("There an action to be execute after (configureRequest): "
+                        + attr.getActionAttributeTest().getAction());
+                executeAction(driver, attr.getActionAttributeTest());
+            }
+        }
+    }
 
-		if (attributeTest.getActionAttributeTest() != null) {
-			log.info("There an action to be execute (wasTestSuccessful): "
-					+ attributeTest.getActionAttributeTest().getAction());
-			executeAction(driver, attributeTest.getActionAttributeTest());
-		}
+    public By getExpectedElement(AttributeTest attr) {
+        Assert.notNull(attr, "AttributeTest must not be null!");
+        if (StringUtils.isNoneBlank(attr.getId())) {
+            return By.id(attr.getId());
+        } else if (StringUtils.isNoneBlank(attr.getName())) {
+            return By.name(attr.getName());
+        } else if (StringUtils.isNoneBlank(attr.getCssClass())) {
+            return By.className(attr.getCssClass());
+        }
+        return null;
+    }
 
-		List<WebElement> resultsLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(byElement));
-		if (attributeTest.getValidationType().equals("html")) {
-			if (resultsLinks != null && !resultsLinks.isEmpty()) {
-				return resultsLinks.get(0).findElement(byElement).getText().equals(attributeTest.getValue());
-			}
-		} else if (attributeTest.getValidationType().equals("hasElement")) {
-			return resultsLinks != null && !resultsLinks.isEmpty();
-		} else if (attributeTest.getValidationType().equals("text")) {
-			return resultsLinks.get(0).getText().equals(attributeTest.getValue());
-		}
-		return false;
-	}
+    public boolean wasTestSuccessful(WebDriver driver, AttributeTest attributeTest) {
+        WebDriverWait wait = new WebDriverWait(driver, generalConfig.getTestWaitTimeout());
+        By byElement = getExpectedElement(attributeTest);
 
-	private By getExpectedElement(AttributeTest attr) {
-		if (StringUtils.isNoneBlank(attr.getId())) {
-			return By.id(attr.getId());
-		} else if (StringUtils.isNoneBlank(attr.getName())) {
-			return By.name(attr.getName());
-		} else if (StringUtils.isNoneBlank(attr.getCssClass())) {
-			return By.className(attr.getCssClass());
-		}
-		return null;
-	}
+        if (attributeTest.getActionAttributeTest() != null) {
+            log.info("There an action to be execute (wasTestSuccessful): "
+                    + attributeTest.getActionAttributeTest().getAction());
+            executeAction(driver, attributeTest.getActionAttributeTest());
+        }
 
-	private void configureRequest(List<SeleniumAttributeTest> attributeTests, WebDriver driver) {
-		for (SeleniumAttributeTest attr : attributeTests) {
-			boolean hasAction = attr.getActionAttributeTest() != null;
-
-			if (hasAction && attr.getActionAttributeTest().isRunBeforeSetValue()) {
-				log.info("There an action to be execute before (configureRequest): "
-						+ attr.getActionAttributeTest().getAction());
-				executeAction(driver, attr.getActionAttributeTest());
-			}
-
-			WebElement ele = getWebElement(driver, attr);
-			ele.sendKeys(attr.getValue());
-
-			if (hasAction && !attr.getActionAttributeTest().isRunBeforeSetValue()) {
-				log.info("There an action to be execute after (configureRequest): "
-						+ attr.getActionAttributeTest().getAction());
-				executeAction(driver, attr.getActionAttributeTest());
-			}
-		}
-	}
-
-	private WebElement getWebElement(WebDriver driver, SeleniumAttributeTest attr) {
-		WebElement ele = null;
-		if (StringUtils.isNoneBlank(attr.getId())) {
-			ele = driver.findElement(By.id(attr.getId()));
-		} else if (StringUtils.isNoneBlank(attr.getName())) {
-			ele = driver.findElement(By.name(attr.getName()));
-		} else if (StringUtils.isNoneBlank(attr.getCssClass())) {
-			ele = driver.findElement(By.className(attr.getCssClass()));
-		}
-		return ele;
-	}
+        List<WebElement> resultsLinks = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(byElement));
+        if (attributeTest.getValidationType().equals("html")) {
+            if (resultsLinks != null && !resultsLinks.isEmpty()) {
+                return resultsLinks.get(0).findElement(byElement).getText().equals(attributeTest.getValue());
+            }
+        } else if (attributeTest.getValidationType().equals("hasElement")) {
+            return resultsLinks != null && !resultsLinks.isEmpty();
+        } else if (attributeTest.getValidationType().equals("text")) {
+            return resultsLinks.get(0).getText().equals(attributeTest.getValue());
+        }
+        return false;
+    }
 }
