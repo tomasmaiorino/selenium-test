@@ -2,8 +2,8 @@ package com.tsm.config;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,5 +50,10 @@ public class ChromeTestDriver extends BaseTestDriver {
 			return new ChromeDriver();
 		}
 	}
+
+    @Override
+    public WebDriverWait getWebDriverWait(WebDriver webDriver, long timeout) {
+        return new WebDriverWait(webDriver, timeout);
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.tsm.config;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Created by tomas on 2/19/17.
@@ -18,5 +19,7 @@ public abstract class BaseTestDriver {
     public abstract boolean isStartBrowser();
 
     public abstract void setStartBrowser(boolean startBrowser);
+    
+    public abstract WebDriverWait getWebDriverWait(WebDriver webDriver, long timeout);
     
 }
