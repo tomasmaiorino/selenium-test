@@ -1,5 +1,7 @@
 package com.tsm.model;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +24,9 @@ public class TestDone {
 
     @Getter @Setter
     private String message;
+    
+    @Getter @Setter
+    private List<AttributeTested> attributesTested;
 }
 
 

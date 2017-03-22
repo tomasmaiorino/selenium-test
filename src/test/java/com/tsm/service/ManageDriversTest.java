@@ -165,4 +165,42 @@ public class ManageDriversTest {
 		verify(fireFoxTestDriver).setStartBrowser(scenarioTest.isStartBrowser());
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void validrivers_InvalidDriverNameGiven_ShouldThrowException() {
+		// Set Up
+		List<String> driversName = Collections.emptyList();
+		// Do test
+		manageDrivers.validDrivers(driversName);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void validDrivers_InValidDriverNameGiven_ShouldThrowException() {
+		// Set Up
+		String name = "safari";
+
+		// Expectations
+		when(chromeTestDriver.getDriverName()).thenReturn("chrome");
+		when(fireFoxTestDriver.getDriverName()).thenReturn("firefox");
+
+		manageDrivers.validDrivers(Collections.singletonList(name));
+
+	}
+
+	@Test
+	public void validDrivers_notExistDriverGiven_ShouldReturnFalse() {
+		// Set Up
+		List<String> driversName = Arrays.asList(new String[]{"chrome", "firefox"});
+
+		// Expectations
+		when(chromeTestDriver.getDriverName()).thenReturn("chrome");
+		when(chromeTestDriver.getSystemPropertyName()).thenReturn("chromeName");
+		when(chromeTestDriver.getSystemPropertyValue()).thenReturn("chrome");
+		when(fireFoxTestDriver.getDriverName()).thenReturn("firefox");
+		when(fireFoxTestDriver.getSystemPropertyName()).thenReturn("firefoxName");
+		when(fireFoxTestDriver.getSystemPropertyValue()).thenReturn("firefox");
+
+		// Do test
+		Assert.assertFalse(manageDrivers.validDrivers(driversName));
+	}
+
 }

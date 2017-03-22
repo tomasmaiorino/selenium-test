@@ -2,6 +2,7 @@ package com.tsm.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,9 @@ public class TestResult {
 
     @Setter
     private List<TestDone> testsDone;
+
+    @Getter @Setter
+    private Map<String, String> scenariosTested;
     
     public List<TestDone> getTestsDone() {
     	if (testsDone == null) {

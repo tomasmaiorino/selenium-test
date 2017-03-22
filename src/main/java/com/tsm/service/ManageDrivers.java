@@ -1,5 +1,6 @@
 package com.tsm.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -65,5 +66,17 @@ public class ManageDrivers {
     		drivers.add(base);
     	}
     	return drivers;
+    }
+
+    public boolean validDrivers(List<String> driversName) {
+        Assert.notEmpty(driversName, "DriversName must not be empty!");
+        List<BaseTestDriver> baseTestDrivers = new ArrayList<>();
+        driversName.forEach(d -> baseTestDrivers.add(getBaseTestDriverByName(d)));
+        for (BaseTestDriver baseTestDriver : baseTestDrivers) {
+            if (!new File(baseTestDriver.getSystemPropertyValue()).exists()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
